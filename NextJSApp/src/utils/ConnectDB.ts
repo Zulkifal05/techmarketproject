@@ -15,6 +15,7 @@ export const connectDB = async () => {
 
   try {
     const connection = await mongoose.connect(process.env.NEXT_MONGODB_URI || "", {
+      dbName: "TechMarketDB",
     })
     
     if(connection?.connections[0].readyState === 1) {
