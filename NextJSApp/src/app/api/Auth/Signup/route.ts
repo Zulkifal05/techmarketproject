@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import UserModel from "@/models/UserModel"
 import { connectDB } from "@/utils/ConnectDB"
 import { SignupSchema } from "@/schemas/SignupSchema"
+import isCloudinaryUrl from "@/utils/CloudinaryLinkCheck"
 
 export async function POST(req: Request) {
     await connectDB()
@@ -24,6 +25,10 @@ export async function POST(req: Request) {
         const hashedPassword = await bcrypt.hash(body.password, 10)
 
         if(body.profilePicture) {  // If profile picture is provided, include it in the user creation
+            if(!isCloudinaryUrl(body.profilePicture)) {  // Validate that the profile picture URL is a Cloudinary URL
+                return NextResponse.json({ error: "Invalid profile picture URL. Must be a Cloudinary URL.", success : false }, { status: 400 })
+            }
+
             const newUser = new UserModel({
                 name: body.name,
                 email: body.email,
