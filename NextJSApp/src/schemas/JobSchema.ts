@@ -1,5 +1,6 @@
 import z from "zod"
 import { developmentCategories, DevelopmentCategory } from "@/constants/Categories"
+import { Types } from "mongoose"
 
 export const CreateJobSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -8,4 +9,10 @@ export const CreateJobSchema = z.object({
     message: "Invalid category"
   })).min(1, "At least one category is required"),
   jobPrice: z.number().min(0, "Job price must be a positive number")
+})
+
+export const ChangeJobStatusSchema = z.object({
+  status: z.enum(["OPEN", "PROGRESSING", "COMPLETED"], { message: "Status must be either 'OPEN', 'PROGRESSING' or 'COMPLETED'" }),
+  uploadedBy: z.string()
+    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid user ID" })
 })
