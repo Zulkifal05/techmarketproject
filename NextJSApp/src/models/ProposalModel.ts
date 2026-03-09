@@ -31,7 +31,8 @@ const ProposalSchema = new mongoose.Schema<Proposal>(
     ProposalFor: {
         type: mongoose.Types.ObjectId,
         ref: "Job",
-        required: [true, "ProposalFor is required"]
+        required: [true, "ProposalFor is required"],
+        index: true
     },
     status: {
         type: String,
