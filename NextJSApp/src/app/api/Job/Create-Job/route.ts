@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { CreateJobSchema } from "@/schemas/CreateJobSchema"
+import { CreateJobSchema } from "@/schemas/JobSchema"
 import { verifyJWT } from "@/utils/VerifyJWT"
 import { developmentCategories, DevelopmentCategory } from "@/constants/Categories"
 import JobModel from "@/models/JobModel"
