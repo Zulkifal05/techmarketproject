@@ -6,7 +6,8 @@ interface Job {
     description: string,
     uploadedBy: mongoose.Types.ObjectId,
     categories: DevelopmentCategory[],
-    jobPrice: number
+    jobPrice: number,
+    status: "OPEN" | "PROGRESSING" | "COMPLETED"
 }
 
 const JobSchema = new mongoose.Schema<Job>(
@@ -39,6 +40,11 @@ const JobSchema = new mongoose.Schema<Job>(
         type: Number,
         required: [true, "Job price is required"],
         min: [0, "Job price must be a positive number"]
+    },
+    status: {
+        type: String,
+        enum: ["OPEN", "PROGRESSING", "COMPLETED"],
+        default: "OPEN"
     }
     },{timestamps: true})
 
