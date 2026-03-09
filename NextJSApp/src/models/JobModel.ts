@@ -1,9 +1,12 @@
 import mongoose from "mongoose"
+import { developmentCategories, DevelopmentCategory } from "@/constants/Categories"
 
 interface Job {
     title: string,
     description: string,
     uploadedBy: mongoose.Types.ObjectId,
+    categories: DevelopmentCategory[],
+    jobPrice: number
 }
 
 const JobSchema = new mongoose.Schema<Job>(
@@ -21,6 +24,22 @@ const JobSchema = new mongoose.Schema<Job>(
         ref: "User",
         required: [true, "UploadedBy is required"]
     },
+    categories: [
+        { 
+            type: String,
+            enum: developmentCategories,
+            required: [true, "At least one category is required"],
+            validate: {
+                validator: (arr: string[]) => arr.length > 0,
+                message: "At least one category is required"
+            }
+        }
+    ],
+    jobPrice: {
+        type: Number,
+        required: [true, "Job price is required"],
+        min: [0, "Job price must be a positive number"]
+    }
     },{timestamps: true})
 
 const JobModel = mongoose.models.Job || mongoose.model<Job>("Job", JobSchema)
