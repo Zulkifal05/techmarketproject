@@ -13,6 +13,6 @@ export const CreateJobSchema = z.object({
 
 export const ChangeJobStatusSchema = z.object({
   status: z.enum(["OPEN", "PROGRESSING", "COMPLETED"], { message: "Status must be either 'OPEN', 'PROGRESSING' or 'COMPLETED'" }),
-  uploadedBy: z.string()
-    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid user ID" })
+  jobId: z.string()
+    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid job ID" })
 })
