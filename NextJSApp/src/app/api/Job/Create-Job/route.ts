@@ -20,6 +20,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized", success: false }, { status: 401 })
         }
 
+        if(user.role !== "BUYER") {
+            return NextResponse.json({ message: "Only buyers can create jobs", success: false }, { status: 403 })
+        }
+
         const body = await req.json()
         const { title, description, categories, jobPrice } = body;
 
