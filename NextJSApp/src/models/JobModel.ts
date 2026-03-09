@@ -23,7 +23,8 @@ const JobSchema = new mongoose.Schema<Job>(
     uploadedBy: {
         type: mongoose.Types.ObjectId,
         ref: "User",
-        required: [true, "UploadedBy is required"]
+        required: [true, "UploadedBy is required"],
+        index: true
     },
     categories: [
         { 
