@@ -6,7 +6,7 @@ interface Proposal {
     uploadedBy: mongoose.Types.ObjectId,
     Bid: number,
     ProposalFor: mongoose.Types.ObjectId
-    status?: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED"
+    status: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED"
 }
 
 const ProposalSchema = new mongoose.Schema<Proposal>(

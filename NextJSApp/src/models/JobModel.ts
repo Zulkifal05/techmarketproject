@@ -4,7 +4,6 @@ interface Job {
     title: string,
     description: string,
     uploadedBy: mongoose.Types.ObjectId,
-    Proposals: mongoose.Types.ObjectId[]
 }
 
 const JobSchema = new mongoose.Schema<Job>(
@@ -22,10 +21,6 @@ const JobSchema = new mongoose.Schema<Job>(
         ref: "User",
         required: [true, "UploadedBy is required"]
     },
-    Proposals: [{
-        type: mongoose.Types.ObjectId,
-        ref: "Proposal"
-    }]
     },{timestamps: true})
 
 const JobModel = mongoose.models.Job || mongoose.model<Job>("Job", JobSchema)
