@@ -16,3 +16,8 @@ export const ChangeJobStatusSchema = z.object({
   jobId: z.string()
     .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid job ID" })
 })
+
+export const DeleteJobSchema = z.object({
+  jobId: z.string()
+    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid job ID" })
+})
