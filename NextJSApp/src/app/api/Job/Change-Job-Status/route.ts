@@ -42,7 +42,7 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ message: "Job not found", success: false }, { status: 404 })
         }
 
-        if (job.uploadedBy.toString() !== user._id) {
+        if (job.uploadedBy.toString() !== user.id) {
             return NextResponse.json({ message: "You are not authorized to change the status of this job", success: false }, { status: 403 })
         }
 
