@@ -11,10 +11,11 @@ export const CreateJobSchema = z.object({
   jobPrice: z.number().min(0, "Job price must be a positive number")
 })
 
-export const ChangeJobStatusSchema = z.object({
-  status: z.enum(["OPEN", "PROGRESSING", "COMPLETED"], { message: "Status must be either 'OPEN', 'PROGRESSING' or 'COMPLETED'" }),
+export const AssignJobSchema = z.object({
   jobId: z.string()
-    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid job ID" })
+    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid job ID" }),
+  proposalId: z.string()
+    .refine((val) => Types.ObjectId.isValid(val), { message: "Invalid proposal ID" })
 })
 
 export const DeleteJobSchema = z.object({
