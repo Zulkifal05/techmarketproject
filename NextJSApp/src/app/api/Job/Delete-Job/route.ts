@@ -2,6 +2,7 @@ import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { verifyJWT } from "@/utils/VerifyJWT"
 import JobModel from "@/models/JobModel"
+import ProposalModel from "@/models/ProposalModel"
 import { DeleteJobSchema } from "@/schemas/JobSchema"
 
 export async function DELETE(req: Request) {
@@ -44,6 +45,9 @@ export async function DELETE(req: Request) {
         if (job.uploadedBy.toString() !== user.id) {
             return NextResponse.json({ message: "You are not authorized to delete this job", success: false }, { status: 403 })
         }
+
+        // Delete associated proposals with the job
+        await ProposalModel.deleteMany({ ProposalFor: job._id })
 
         await JobModel.findByIdAndDelete(jobId)
 
