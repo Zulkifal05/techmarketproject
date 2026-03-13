@@ -9,3 +9,9 @@ export const CreateProposalSchema = z.object({
         message: "Invalid ObjectId for ProposalFor"
     }),
 })
+
+export const DeleteProposalSchema = z.object({
+    proposalId: z.string().refine((value) => Types.ObjectId.isValid(value), {
+        message: "Invalid ObjectId for proposalId"
+    }),
+})
