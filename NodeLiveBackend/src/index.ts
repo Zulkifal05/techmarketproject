@@ -1,12 +1,13 @@
 import dotenv from 'dotenv'
+dotenv.config();
+
 import { connectDB } from "./utils/db.js"
 import { Server } from "socket.io"
 import http from 'http'
-
-dotenv.config();
+import { app } from "./app.js"
 
 const PORT = process.env.PORT || 5000
-const server = http.createServer();
+const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
