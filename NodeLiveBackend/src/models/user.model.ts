@@ -6,6 +6,7 @@ export interface User {
   password: string;
   profilePicture: string;
   role: "SELLER" | "BUYER";
+  refreshToken: string
 }
 
 const UserSchema = new mongoose.Schema<User>(
@@ -35,6 +36,9 @@ const UserSchema = new mongoose.Schema<User>(
       enum: ["SELLER", "BUYER"],
       required: [true, "Role is required"],
     },
+    refreshToken: {
+      type: String
+    }
   },
   { timestamps: true }
 );
