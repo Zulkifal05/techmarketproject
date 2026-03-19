@@ -1,6 +1,6 @@
 import { verifyJWT } from "@/utils/VerifyJWT"
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
+import { headers } from "next/headers"
 import isCloudinaryUrl from "@/utils/CloudinaryLinkCheck"
 
 export async function POST(req: Request) {
@@ -15,8 +15,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid profile picture URL. Only Cloudinary URLs are allowed.", success: false }, { status: 400 })
         }
 
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+        const headerList = await headers()
+        const token = headerList.get("Authorization")?.replace("bearer ","")
 
         if (!token) {
             return NextResponse.json({ error: "No token provided", success: false }, { status: 401 })

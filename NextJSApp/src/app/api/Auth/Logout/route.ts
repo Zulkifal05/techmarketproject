@@ -1,27 +1,31 @@
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
+import { headers } from "next/headers"
 import { verifyJWT } from "@/utils/VerifyJWT"
 
 export async function POST() {
-  // Read cookies from request
+  // Read headers from request
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const headerList = await headers();
+    const token = headerList.get("Authorization")?.replace("bearer ","");
   
     if (!token) {
       return NextResponse.json({ error: "No token provided" }, { status: 401 });
     }
     
-    const decoded = await verifyJWT(token);
-    if(!decoded) {
+    const user = await verifyJWT(token);
+
+    if(!user) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
+
+    user.refreshToken = ""
+    await user.save()
 
     const res = NextResponse.json(
       { success: true, message: "Logout successful" },
       { status: 200 }
     );
-    res.cookies.delete("token");
+    res.cookies.delete("refreshToken");
   
     return res;
   } catch (error) {

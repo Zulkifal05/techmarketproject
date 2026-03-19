@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { LoginSchema } from "@/schemas/LoginSchema"
 import { connectDB } from "@/utils/ConnectDB"
 import bcrypt from "bcryptjs"
-import jwt, { SignOptions } from "jsonwebtoken"
+import GenerateAccessAndRefreshToken from "@/utils/GenerateJWTTokens"
 
 export async function POST(request: Request) {
     const { email, password } = await request.json()
@@ -33,23 +33,18 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
         }
 
-        const payload = { userId: user._id };
-        const secret = process.env.NEXT_JWT_SECRET!;
-        const expiresIn = "5d"; // Token expires in 5 days
-        const options: SignOptions = { expiresIn };
-
-        const token = jwt.sign(payload, secret, options);
+        const { accessToken , refreshToken } = await GenerateAccessAndRefreshToken(user._id)
 
         const userObject = user.toObject();
         delete userObject.password; // Remove password from user object
 
-        const res = NextResponse.json({ success: true, message: "Login successful", user: userObject }, { status: 200 })
+        const res = NextResponse.json({ success: true, message: "Login successful", user: userObject, accessToken }, { status: 200 })
 
-        res.cookies.set("token", token, {
+        res.cookies.set("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 5 * 24 * 60 * 60, // 5 days in seconds
+            maxAge: 10 * 24 * 60 * 60 * 1000 // 10 days
         })
 
         return res
