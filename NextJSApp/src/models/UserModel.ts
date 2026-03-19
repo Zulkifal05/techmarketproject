@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
-interface User {
+export interface User {
   name: string;
   email: string;
   password: string;
   profilePicture: string;
   role: "SELLER" | "BUYER";
+  refreshToken: string
 }
 
 const UserSchema = new mongoose.Schema<User>(
@@ -35,6 +36,10 @@ const UserSchema = new mongoose.Schema<User>(
       enum: ["SELLER", "BUYER"],
       required: [true, "Role is required"],
     },
+    refreshToken: {
+      type: String,
+      default: ""
+    }
   },
   { timestamps: true }
 );
