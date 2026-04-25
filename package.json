@@ -1,0 +1,17 @@
+{
+  "name": "techmarketproject",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "NextJSApp",
+    "NodeLiveBackend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:next": "npm run dev --workspace=nextjs-app",
+    "dev:node": "npm run dev --workspace=node-backend"
+  },
+  "dependencies": {
+    "mongoose": "^9.5.0"
+  }
+}

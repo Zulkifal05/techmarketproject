@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@techmarket/models": ["packages/models/src"]
+    }
+  }
+}
