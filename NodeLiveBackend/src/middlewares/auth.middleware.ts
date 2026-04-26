@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { Request , Response , NextFunction } from "express"
-import UserModel from "../models/user.model.js"
+import { User as UserModel } from "@techmarket/models"
 
 interface MyJwtPayload extends JwtPayload {
   userId: string;

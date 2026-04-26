@@ -1,4 +1,11 @@
-import { User } from "../models/user.model.ts"
+export interface User {
+  name: string;
+  email: string;
+  password: string;
+  profilePicture: string;
+  role: "SELLER" | "BUYER";
+  refreshToken: string
+}
 
 declare global {
   namespace Express {
