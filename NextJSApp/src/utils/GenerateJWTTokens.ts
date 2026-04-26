@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken"
-import UserModel from "@/models/UserModel"
+import { User as UserModel } from "@techmarket/models"
 
 async function GenerateAccessAndRefreshToken (userId:string) {
     try {

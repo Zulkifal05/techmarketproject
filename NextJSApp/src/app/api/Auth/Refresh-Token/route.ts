@@ -2,7 +2,7 @@ import GenerateAccessAndRefreshToken from "@/utils/GenerateJWTTokens"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import UserModel from "@/models/UserModel"
+import { User as UserModel } from "@techmarket/models"
 import { connectDB } from "@/utils/ConnectDB"
 
 export async function GET() {

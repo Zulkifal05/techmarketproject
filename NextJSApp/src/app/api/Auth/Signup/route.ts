@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import UserModel from "@/models/UserModel"
+import { User as UserModel } from "@techmarket/models"
 import { connectDB } from "@/utils/ConnectDB"
 import { SignupSchema } from "@/schemas/SignupSchema"
 import isCloudinaryUrl from "@/utils/CloudinaryLinkCheck"

@@ -1,4 +1,4 @@
-import UserModel from "@/models/UserModel"
+import { User as UserModel } from "@techmarket/models"
 import { NextResponse } from "next/server"
 import { LoginSchema } from "@/schemas/LoginSchema"
 import { connectDB } from "@/utils/ConnectDB"
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid email or password format" }, { status: 400 })
         }
 
-        const user = await UserModel.findOne({ email }).select("+password")
+        const user = await UserModel.findOne({ email }).select("+password -refreshToken")
 
         if (!user) {
             return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })

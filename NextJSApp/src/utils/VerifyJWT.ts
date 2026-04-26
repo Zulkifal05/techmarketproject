@@ -1,7 +1,7 @@
 "use server"
 
 import jwt , { JwtPayload as DefaultPayload } from "jsonwebtoken"
-import UserModel from "@/models/UserModel"
+import { User as UserModel } from "@techmarket/models"
 import { connectDB } from "./ConnectDB"
 
 export const verifyJWT = async (token: string) => { 
