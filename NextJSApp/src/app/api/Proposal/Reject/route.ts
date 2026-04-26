@@ -2,14 +2,14 @@ import { NextResponse } from "next/server"
 import { verifyJWT } from "@/utils/VerifyJWT"
 import ProposalModel from "@/models/ProposalModel"
 import JobModel from "@/models/JobModel"
-import { cookies } from "next/headers"
+import { headers } from "next/headers"
 import { DeleteProposalSchema } from "@/schemas/ProposalSchema"
 //This schema is used to validate the request body for deleting a proposal which is also a mongoose object id
 
 export async function POST(req: Request) {
     try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+        const headerList = await headers()
+        const token = headerList.get("Authorization")?.replace("Bearer ", "")
 
         if (!token) {
             return NextResponse.json({ error: "Unauthorized: No token provided", success: false }, { status: 401 })

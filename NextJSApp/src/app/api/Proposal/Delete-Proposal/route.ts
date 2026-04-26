@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 import { verifyJWT } from "@/utils/VerifyJWT"
 import ProposalModel from "@/models/ProposalModel"
-import { cookies } from "next/headers"
+import { headers } from "next/headers"
 import { DeleteProposalSchema } from "@/schemas/ProposalSchema"
 
 export async function DELETE(req: Request) {
     try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+        const headerList = await headers()
+        const token = headerList.get("Authorization")?.replace("Bearer ", "")
 
         if (!token) {
             return NextResponse.json({ message: "Unauthorized: No token provided", success: false }, { status: 401 })

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 import { verifyJWT } from "@/utils/VerifyJWT"
 import ProposalModel from "@/models/ProposalModel"
-import { cookies } from "next/headers"
+import { headers } from "next/headers"
 
 export async function GET() {
     try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+        const headerList = await headers()
+        const token = headerList.get("Authorization")?.replace("Bearer ", "")
 
         if (!token) {
             return NextResponse.json({ error: "Unauthorized: No token provided", success: false }, { status: 401 })
