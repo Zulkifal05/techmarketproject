@@ -24,3 +24,24 @@ connectDB().then(() => {
     console.error('Failed to connect to the database:', error);
     process.exit(1);
 })
+
+// Object to store online users
+const onlineUsers: Record<string, string> = {};
+
+export function getReceiverSocketId(userId: string): string | undefined {
+    return onlineUsers[userId];
+}
+
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+    // Listen for user login and store their socket ID
+    const { userId } = socket.handshake.auth;
+    onlineUsers[userId] = socket.id;
+
+    socket.on('disconnect', () => {
+        // Remove the user from the online users list
+        delete onlineUsers[userId];
+    });
+})
+
+export { io }
