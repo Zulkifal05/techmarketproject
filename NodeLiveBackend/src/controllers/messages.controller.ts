@@ -117,3 +117,42 @@ export async function SendMessage(req: Request,res: Response) {
         })
     }
 }
+
+export async function GetMessages(req: Request,res: Response) {
+    try {
+        const { receiver } = req.body;
+
+        if (!receiver) {
+            return res.status(400).json({
+                success: false,
+                message: "Receiver is required"
+            });
+        }
+
+        const messages = await MessageModel.find({
+            $or: [
+                { sender: req.user?._id, receiver },
+                { sender: receiver, receiver: req.user?._id }
+            ]
+        }).sort({ createdAt: 1 });
+
+        if(messages.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No messages found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Messages retrieved successfully",
+            data: messages
+        });
+    } catch (error) {
+        console.log("Error in GetMessages Controller: ",error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
