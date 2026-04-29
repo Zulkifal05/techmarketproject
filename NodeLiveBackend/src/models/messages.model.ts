@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 interface Message {
   sender: mongoose.Types.ObjectId;
   receiver: mongoose.Types.ObjectId;
+  chatID: mongoose.Types.ObjectId;
   text?: string;
   picture?: string;
 }
@@ -19,6 +20,12 @@ const messageSchema = new mongoose.Schema<Message>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "Receiver is required"],
+      index: true
+    },
+    chatID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
+      required: [true, "Chat ID is required"],
       index: true
     },
     text: {
