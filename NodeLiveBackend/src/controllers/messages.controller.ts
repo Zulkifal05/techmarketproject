@@ -3,6 +3,7 @@ import { Types } from "mongoose"
 import MessageModel from "../models/messages.model.js"
 import isCloudinaryUrl from "../utils/cloudinaryURLcheck.js"
 import { getReceiverSocketId, io } from "../index.js"
+import ChatModel from "../models/chat.model.js"
 
 export async function SendMessage(req: Request,res: Response) {
     try {
@@ -13,7 +14,8 @@ export async function SendMessage(req: Request,res: Response) {
             });
         }
 
-        const { receiver, text, picture } = req.body;
+        const { receiver, text, picture, chatID } = req.body;
+        let chatIdToUse = chatID;  // This will either be the provided chatID or the new chatID if a new chat is created
 
         if (!receiver) {
             return res.status(400).json({
@@ -36,13 +38,31 @@ export async function SendMessage(req: Request,res: Response) {
             });
         }
 
+        //If no chatID is provided, create a new chat and use its ID for the message
+        if(!chatID) {
+            const newChat = new ChatModel({
+                participants: [req.user._id, receiver],
+                lastMessage: null
+            });
+            await newChat.save();
+            chatIdToUse = newChat._id;
+        } else { // If chatID is provided, validate it
+            if(!Types.ObjectId.isValid(chatIdToUse)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid Chat ID"
+                });
+            }
+        }
+
         // If both text and picture are provided
         if(text && picture) {
             const newMessage = new MessageModel({
                 sender: req.user._id,
                 receiver,
                 text,
-                picture
+                picture,
+                chatID: chatIdToUse
             });
             await newMessage.save();
 
@@ -64,7 +84,8 @@ export async function SendMessage(req: Request,res: Response) {
             const newMessage = new MessageModel({
                 sender: req.user._id,
                 receiver,
-                text
+                text,
+                chatID: chatIdToUse
             });
             await newMessage.save();
 
@@ -93,7 +114,8 @@ export async function SendMessage(req: Request,res: Response) {
             const newMessage = new MessageModel({
                 sender: req.user._id,
                 receiver,
-                picture
+                picture,
+                chatID: chatIdToUse
             });
             await newMessage.save();
 
