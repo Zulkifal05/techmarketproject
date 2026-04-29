@@ -6,7 +6,7 @@ export async function POST() {
   // Read headers from request
   try {
     const headerList = await headers();
-    const token = headerList.get("Authorization")?.replace("bearer ","");
+    const token = headerList.get("Authorization")?.replace("Bearer ","");
   
     if (!token) {
       return NextResponse.json({ error: "No token provided" }, { status: 401 });

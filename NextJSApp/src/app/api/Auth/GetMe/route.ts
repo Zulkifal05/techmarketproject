@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 export async function GET() {
     try {
         const headerList = await headers()
-        const token = headerList.get("Authorization")?.replace("bearer ","")
+        const token = headerList.get("Authorization")?.replace("Bearer ","")
 
         if (!token) {
             return NextResponse.json({ error: "No token provided", success: false }, { status: 401 })
@@ -17,7 +17,7 @@ export async function GET() {
             return NextResponse.json({ error: "Invalid token", success: false }, { status: 401 })
         }
 
-        return NextResponse.json({ user, success: true }, { status: 200 })  
+        return NextResponse.json({ message: "User retrieved successfully", user, success: true }, { status: 200 })  
     } catch (error) {
         console.error("Error in GetMe route:", error)
         return NextResponse.json({ error: "Internal Server Error", success: false }, { status: 500 })
