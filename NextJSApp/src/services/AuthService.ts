@@ -1,5 +1,6 @@
-import { User } from "@techmarket/models/dist/UserModel";
-import axios, { AxiosRequestConfig } from "axios";
+import { User } from "@techmarket/models/dist/UserModel"
+import axios from "axios"
+import ReftryAuthFailedApiCall from "./RetryApiService"
 
 type signupResponseData = {
     status: number;
@@ -7,8 +8,6 @@ type signupResponseData = {
     message?: string;
     user?: User;
 }
-
-type methodType = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 class AuthService {
     async SignUp(username: string, email: string, password: string, role: string) {
@@ -78,7 +77,7 @@ class AuthService {
             // If the logout API call fails due to an authentication issue (e.g., expired token), we can attempt to refresh the token and retry the logout API call.
             if(axios.isAxiosError(error) && error.response) {
                 if(error.response.status === 401) {
-                    const response = await this.ReftryAuthFailedApiCall("POST", "/api/Auth/Logout");
+                    const response = await ReftryAuthFailedApiCall("POST", "/api/Auth/Logout");
                     if(response) {
                         return response.data; // Return the response from the retried API call
                     }
@@ -103,7 +102,7 @@ class AuthService {
             // If the API call to get the current user fails due to an authentication issue (e.g., expired token), we can attempt to refresh the token and retry the API call to get the current user.
             if(axios.isAxiosError(error) && error.response) {
                 if(error.response.status === 401) {
-                    const retryResponse = await this.ReftryAuthFailedApiCall("GET", "/api/Auth/GetMe");
+                    const retryResponse = await ReftryAuthFailedApiCall("GET", "/api/Auth/GetMe");
                     if(retryResponse) {
                         return retryResponse.data.user; // Return the response from the retried API call
                     }
@@ -137,7 +136,7 @@ class AuthService {
             // If the API call to update the profile picture fails due to an authentication issue (e.g., expired token), we can attempt to refresh the token and retry the API call to update the profile picture.
             if(axios.isAxiosError(error) && error.response) {
                 if(error.response.status === 401) {
-                    const response = await this.ReftryAuthFailedApiCall("POST", "/api/Auth/Upload-ProfilePic", { profilePicture });
+                    const response = await ReftryAuthFailedApiCall("POST", "/api/Auth/Upload-ProfilePic", { profilePicture });
                     if(response) {
                         return response.data.user; // Return the response from the retried API call
                     }
@@ -160,40 +159,6 @@ class AuthService {
         } catch (error) {
             console.error("Error refreshing token:", error);
             return "";
-        }
-    }
-    
-    // This function can be used to retry API calls that failed due to authentication issues, such as an expired token. It can be called after refreshing the token to attempt the original API call again.
-    async ReftryAuthFailedApiCall(method: methodType, url: string, data?: unknown) {
-        try {
-            const newAccessToken : string = await this.RefreshToken();
-
-            if(newAccessToken) {
-                // If the token refresh was successful, retry the original API call
-
-                const config: AxiosRequestConfig = {
-                    method,
-                    url,
-                    headers: {
-                        Authorization: `Bearer ${newAccessToken}`,
-                    },
-                };
-
-                if (data && method !== "GET") {
-                    config.data = data;
-                }
-
-                const retryResponse = await axios.request(config);
-
-                if(retryResponse) {
-                    return retryResponse; // Return the response data from the retried API call
-                }
-            } else {
-                throw new Error("Token refresh failed");
-            }
-        } catch (error) {
-            console.error("Error retrying API call:", error);
-            return null;
         }
     }
 }
