@@ -5,7 +5,7 @@ import JobModel from "@/models/JobModel"
 import ProposalModel from "@/models/ProposalModel"
 import { DeleteJobSchema } from "@/schemas/JobSchema"
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request,{ params }: { params: { jobId: string } }) {
     try {
         const headerList = await headers()
         const token = headerList.get("Authorization")?.replace("Bearer ", "")
@@ -24,7 +24,7 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ message: "Only BUYERS are authorized", success: false }, { status: 403 })
         }
 
-        const { jobId } = await req.json()
+        const { jobId } = params
 
         if (!jobId) {
             return NextResponse.json({ message: "Job ID is required", success: false }, { status: 400 })
