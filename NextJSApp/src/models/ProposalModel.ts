@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-interface Proposal {
+export interface Proposal {
     title: string,
     description: string,
     uploadedBy: mongoose.Types.ObjectId,

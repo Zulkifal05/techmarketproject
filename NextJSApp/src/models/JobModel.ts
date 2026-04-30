@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import { developmentCategories, DevelopmentCategory } from "@/constants/Categories"
 
-interface Job {
+export interface Job {
     title: string,
     description: string,
     uploadedBy: mongoose.Types.ObjectId,
