@@ -4,7 +4,7 @@ import ProposalModel from "@/models/ProposalModel"
 import { headers } from "next/headers"
 import { DeleteProposalSchema } from "@/schemas/ProposalSchema"
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request, { params }: { params: { proposalId: string } }) {
     try {
         const headerList = await headers()
         const token = headerList.get("Authorization")?.replace("Bearer ", "")
@@ -23,14 +23,14 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ message: "Forbidden: Only SELLERs can delete proposals", success: false }, { status: 403 })
         }
 
-        const body = await req.json()
+        const { proposalId } = params
+        const body = { proposalId }
         const validation = DeleteProposalSchema.safeParse(body)
 
         if (!validation.success) {
             return NextResponse.json({ message: validation.error.flatten().fieldErrors.proposalId?.[0], success: false }, { status: 400 })
         }
 
-        const { proposalId } = body
         const proposal = await ProposalModel.findByIdAndDelete(proposalId)
 
         if (!proposal) {
