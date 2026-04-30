@@ -33,6 +33,10 @@ async function ReftryAuthFailedApiCall(method: methodType, url: string, data?: u
         }
     } catch (error) {
         console.error("Error retrying API call:", error);
+
+        if(error instanceof Error && error.message === "Token refresh failed") {
+            return "RefreshFailed"; // Return a specific value to indicate that the token refresh failed
+        }
         return null;
     }
 }

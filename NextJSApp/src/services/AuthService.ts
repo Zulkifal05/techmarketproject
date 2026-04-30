@@ -78,6 +78,11 @@ class AuthService {
             if(axios.isAxiosError(error) && error.response) {
                 if(error.response.status === 401) {
                     const response = await ReftryAuthFailedApiCall("POST", "/api/Auth/Logout");
+
+                    if(response === "RefreshFailed") {
+                        throw new Error("Logout the User");
+                    }
+
                     if(response) {
                         return response.data; // Return the response from the retried API call
                     }
@@ -103,6 +108,11 @@ class AuthService {
             if(axios.isAxiosError(error) && error.response) {
                 if(error.response.status === 401) {
                     const retryResponse = await ReftryAuthFailedApiCall("GET", "/api/Auth/GetMe");
+
+                    if(retryResponse === "RefreshFailed") {
+                        throw new Error("Logout the User");
+                    }
+
                     if(retryResponse) {
                         return retryResponse.data.user; // Return the response from the retried API call
                     }
@@ -137,6 +147,11 @@ class AuthService {
             if(axios.isAxiosError(error) && error.response) {
                 if(error.response.status === 401) {
                     const response = await ReftryAuthFailedApiCall("POST", "/api/Auth/Upload-ProfilePic", { profilePicture });
+
+                    if(response === "RefreshFailed") {
+                        throw new Error("Logout the User");
+                    }
+
                     if(response) {
                         return response.data.user; // Return the response from the retried API call
                     }
