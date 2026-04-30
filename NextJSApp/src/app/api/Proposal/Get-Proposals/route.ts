@@ -28,7 +28,7 @@ export async function GET() {
             return NextResponse.json({ error: "No proposals found for this user", success: true }, { status: 200 })
         }
 
-        return NextResponse.json({ message: "Proposals fetched successfully", data: proposals, success: true }, { status: 200 })
+        return NextResponse.json({ message: "Proposals fetched successfully", proposals, success: true }, { status: 201 })
 
     } catch (error) {
         console.error("Error fetching proposals:", error)
