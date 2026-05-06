@@ -1,4 +1,4 @@
-import { headers } from "next/headers"
+import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { CreateJobSchema } from "@/schemas/JobSchema"
 import { verifyJWT } from "@/utils/VerifyJWT"
@@ -7,8 +7,8 @@ import JobModel from "@/models/JobModel"
 
 export async function POST(req: Request) {
     try {
-        const headerList = await headers()
-        const token = headerList.get("Authorization")?.replace("Bearer ", "")
+        const cookieStore = await cookies()
+        const token = cookieStore.get("accessToken")?.value
 
         if (!token) {
             return NextResponse.json({ error: "No token provided", success: false }, { status: 401 })

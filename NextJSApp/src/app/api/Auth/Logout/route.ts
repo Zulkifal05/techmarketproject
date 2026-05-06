@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
-import { headers } from "next/headers"
+import { cookies } from "next/headers"
 import { verifyJWT } from "@/utils/VerifyJWT"
 
 export async function POST() {
   // Read headers from request
   try {
-    const headerList = await headers();
-    const token = headerList.get("Authorization")?.replace("Bearer ","");
+    const cookieStore = await cookies()
+    const token = cookieStore.get("accessToken")?.value
   
     if (!token) {
       return NextResponse.json({ error: "No token provided" }, { status: 401 });
@@ -26,6 +26,7 @@ export async function POST() {
       { status: 200 }
     );
     res.cookies.delete("refreshToken");
+    res.cookies.delete("accessToken");
   
     return res;
   } catch (error) {

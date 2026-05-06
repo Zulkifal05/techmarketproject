@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
         const existingUser = await UserModel.findOne({ email: body.email })
         if (existingUser) {
-            return NextResponse.json({ error: "Email already in use", success : false }, { status: 400 })
+            return NextResponse.json({ error: "Email already in use", success : false }, { status: 401 })
         }
 
         const hashedPassword = await bcrypt.hash(body.password, 10)

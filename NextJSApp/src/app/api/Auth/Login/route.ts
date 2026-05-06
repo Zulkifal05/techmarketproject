@@ -47,6 +47,13 @@ export async function POST(request: Request) {
             maxAge: 10 * 24 * 60 * 60 * 1000 // 10 days
         })
 
+        res.cookies.set("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 1000 * 60 * 15 // 15 mins
+        })
+
         return res
     } catch (error) {
         console.error("Login error:", error)

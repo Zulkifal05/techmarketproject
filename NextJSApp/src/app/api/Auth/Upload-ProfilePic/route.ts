@@ -1,22 +1,12 @@
 import { verifyJWT } from "@/utils/VerifyJWT"
 import { NextResponse } from "next/server"
-import { headers } from "next/headers"
+import { cookies } from "next/headers"
 import isCloudinaryUrl from "@/utils/CloudinaryLinkCheck"
 
 export async function POST(req: Request) {
     try {
-        const { profilePicture } = await req.json()
-
-        if(!profilePicture || typeof profilePicture !== "string" || profilePicture.length === 0) {
-            return NextResponse.json({ error: "Profile picture URL is required,must be a non-empty string", success: false }, { status: 400 })
-        }
-
-        if(!isCloudinaryUrl(profilePicture)) {
-            return NextResponse.json({ error: "Invalid profile picture URL. Only Cloudinary URLs are allowed.", success: false }, { status: 400 })
-        }
-
-        const headerList = await headers()
-        const token = headerList.get("Authorization")?.replace("Bearer ","")
+        const cookieStore = await cookies()
+        const token = cookieStore.get("accessToken")?.value
 
         if (!token) {
             return NextResponse.json({ error: "No token provided", success: false }, { status: 401 })
@@ -26,6 +16,16 @@ export async function POST(req: Request) {
 
         if(!user) {
             return NextResponse.json({ error: "Invalid token", success: false }, { status: 401 })
+        }
+
+        const { profilePicture } = await req.json()
+
+        if(!profilePicture || typeof profilePicture !== "string" || profilePicture.length === 0) {
+            return NextResponse.json({ error: "Profile picture URL is required,must be a non-empty string", success: false }, { status: 400 })
+        }
+
+        if(!isCloudinaryUrl(profilePicture)) {
+            return NextResponse.json({ error: "Invalid profile picture URL. Only Cloudinary URLs are allowed.", success: false }, { status: 400 })
         }
 
         user.profilePicture = profilePicture
