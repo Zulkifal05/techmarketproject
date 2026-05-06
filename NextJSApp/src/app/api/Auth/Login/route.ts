@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         const userObject = user.toObject();
         delete userObject.password; // Remove password from user object
 
-        const res = NextResponse.json({ success: true, message: "Login successful", user: userObject, accessToken }, { status: 200 })
+        const res = NextResponse.json({ success: true, message: "Login successful", user: userObject }, { status: 200 })
 
         res.cookies.set("refreshToken", refreshToken, {
             httpOnly: true,

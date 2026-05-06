@@ -29,7 +29,7 @@ export async function GET() {
 
         const { accessToken , refreshToken } = await GenerateAccessAndRefreshToken(user._id)
 
-        const res = NextResponse.json({message: "Token refreshed successfuly", success: true, accessToken}, { status : 200 })
+        const res = NextResponse.json({ message: "Token refreshed successfuly", success: true }, { status : 200 })
 
         res.cookies.set("refreshToken", refreshToken, {
             httpOnly: true,
