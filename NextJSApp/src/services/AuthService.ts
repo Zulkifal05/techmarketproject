@@ -7,6 +7,7 @@ type signupResponseData = {
     success: boolean;
     message?: string;
     user?: User;
+    accessToken?: string;
 }
 
 class AuthService {
@@ -28,45 +29,41 @@ class AuthService {
                 return response.data?.user; // Return the created user object
             }
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                console.error("Server responded with:", error.response);
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                return "Email already exists";
             }
 
             return null;
         }
     }
 
-    async Login(username: string, password: string) {
+    async Login(email: string, password: string) {
         try {
-            if(!username || !password) {
+            if(!email || !password) {
                 return null;
             }
 
-            const response = await axios.post<signupResponseData>("/api/Auth/Login", { username, password });
+            const response = await axios.post<signupResponseData>("/api/Auth/Login", { email, password });
             
             if(response) {
-                return response.data?.user; // Return the response data (e.g., token, user info)
+                return response.data; // Return the response data (e.g., token, user info)
             }
         } catch (error) {
-            if(axios.isAxiosError(error) && error.response) {
-                if(error.response.status === 401) {
-                    throw new Error("Invalid Credentials");
-                }
+            if(axios.isAxiosError(error) && error.response?.status === 401) {
+                return "InvalidCredentials";
             }
 
             return null;
         }
     }
 
-    async Logout(accessToken: string) {
+    async Logout() {
         try {
             const response = await axios.post(
                 "/api/Auth/Logout",
                 {},
                 { 
-                    headers: { 
-                        Authorization: `Bearer ${accessToken}` 
-                    } 
+                    withCredentials: true
                 }
             )
             
@@ -93,13 +90,12 @@ class AuthService {
         }
     }
 
-    async GetCurrentUser(token: string) {
+    async GetCurrentUser() {
         try {
             const response = await axios.get<signupResponseData>("/api/Auth/GetMe", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                withCredentials: true
             });
+
             if(response) {
                 return response.data.user; // Return the user data from the response
             }
@@ -123,9 +119,9 @@ class AuthService {
         }
     }
 
-    async UpdateProfilePicture(profilePicture: string, token: string) {
+    async UpdateProfilePicture(profilePicture: string) {
         try {
-            if(!token || !profilePicture) {
+            if(!profilePicture) {
                 return null;
             }
 
@@ -133,9 +129,7 @@ class AuthService {
                 "/api/Auth/Upload-ProfilePic",
                 { profilePicture },
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
+                    withCredentials: true
                 }
             );
 
@@ -162,18 +156,18 @@ class AuthService {
         }
     }
 
-    async RefreshToken() : Promise<string> {
+    async RefreshToken() : Promise<boolean> {
         try {
             const response = await axios.get("/api/Auth/Refresh-Token",{ withCredentials: true }); // Include credentials to send cookies
 
             if(response && response.data && response.data.success) {
-                return response.data.accessToken; // Return the new access token
+                return true;
             } else {
                 throw new Error("Failed to refresh token");
             }
         } catch (error) {
             console.error("Error refreshing token:", error);
-            return "";
+            return false;
         }
     }
 }

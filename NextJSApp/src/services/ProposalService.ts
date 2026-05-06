@@ -11,7 +11,7 @@ type proposalResponseData = {
 }
 
 class ProposalService {
-    async CreateProposal(title: string, description: string, Bid: number, ProposalFor: string,token: string) {
+    async CreateProposal(title: string, description: string, Bid: number, ProposalFor: string) {
         try {
             
             if(!title || !description || !Bid || !ProposalFor) {
@@ -26,9 +26,7 @@ class ProposalService {
             }
 
             const response = await axios.post<proposalResponseData>("/api/Proposal/Create-Proposal", data, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                withCredentials: true
             });
 
             if(response) {
@@ -60,12 +58,10 @@ class ProposalService {
         }
     }
 
-    async GetProposals(token: string) {
+    async GetProposals() {
         try {
             const response = await axios.get<proposalResponseData>("/api/Proposal/Get-Proposals", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                withCredentials: true
             });
 
             if(response.status === 200) {
@@ -99,16 +95,14 @@ class ProposalService {
         }
     }
 
-    async DeleteProposal(proposalId: string, token: string) {
+    async DeleteProposal(proposalId: string) {
         try {
             if(!proposalId) {
                 return null; // Return null if proposalId is missing
             }
 
             const response = await axios.delete<proposalResponseData>(`/api/Proposal/Delete-Proposal/${proposalId}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                withCredentials: true
             });
 
             if(response.status === 200) {
@@ -140,7 +134,7 @@ class ProposalService {
         }
     }
 
-    async RejectProposal(proposalId: string, token: string) {
+    async RejectProposal(proposalId: string) {
         try {
 
             if(!proposalId) {
@@ -148,9 +142,7 @@ class ProposalService {
             }
             
             const response = await axios.post<proposalResponseData>(`/api/Proposal/Reject`, { proposalId }, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                withCredentials: true
             });
 
             if(response.status === 200) {

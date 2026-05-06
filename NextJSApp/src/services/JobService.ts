@@ -11,9 +11,9 @@ type jobResponseData = {
 }
 
 class JobService {
-    async AssignJob(jobId: string, proposalId: string, token: string) {
+    async AssignJob(jobId: string, proposalId: string) {
         try {
-            if(!token || !jobId || !proposalId) {
+            if(!jobId || !proposalId) {
                 throw new Error("Missing required fields or token")
             }
 
@@ -21,9 +21,7 @@ class JobService {
                 "/api/Job/Assign-Job",
                 { jobId, proposalId },
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    withCredentials: true
                 }
             )
 
@@ -56,9 +54,9 @@ class JobService {
         }
     }
 
-    async CreateJob(title: string, description: string, categories: string[], jobPrice: number, token: string) {
+    async CreateJob(title: string, description: string, categories: string[], jobPrice: number) {
         try {
-            if(!token || !title || !description || categories.length === 0 || !jobPrice || jobPrice <= 0) {
+            if(!title || !description || categories.length === 0 || !jobPrice || jobPrice <= 0) {
                 throw new Error("Missing required fields or token")
             }
 
@@ -66,9 +64,7 @@ class JobService {
                 "/api/Job/Create-Job",
                 { title, description, categories, jobPrice },
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
+                    withCredentials: true
                 }
             )
 
@@ -99,18 +95,16 @@ class JobService {
         }
     }
 
-    async DeleteJob(jobId: string, token: string) {
+    async DeleteJob(jobId: string) {
         try {
-            if(!token || !jobId) {
+            if(!jobId) {
                 throw new Error("Missing required fields or token")
             }
 
             const response = await axios.delete(
                 `/api/Job/Delete-Job/${jobId}`,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    withCredentials: true
                 }
             )
 
@@ -143,14 +137,16 @@ class JobService {
         }
     }
 
-    async GetJobsFeed(page: number, limit: number, token: string) {
+    async GetJobsFeed(page: number, limit: number) {
         try {
+            if(!page || !limit) {
+                return null
+            }
+
             const response = await axios.get<jobResponseData>(
                 `/api/Job/Feed?page=${page}&limit=${limit}`,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    withCredentials: true
                 }
             )
 
@@ -178,14 +174,12 @@ class JobService {
         }
     }
 
-    async GetUserJobs(token: string) {
+    async GetUserJobs() {
         try {
             const response = await axios.get<jobResponseData>(
                 `/api/Job/Get-Jobs`,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    withCredentials: true
                 }
             )
 

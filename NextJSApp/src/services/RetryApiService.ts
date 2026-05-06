@@ -6,7 +6,7 @@ type methodType = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 // This function can be used to retry API calls that failed due to authentication issues, such as an expired token. It can be called after refreshing the token to attempt the original API call again.
 async function ReftryAuthFailedApiCall(method: methodType, url: string, data?: unknown) {
     try {
-        const newAccessToken : string = await AuthService.RefreshToken();
+        const newAccessToken : boolean = await AuthService.RefreshToken();
 
         if(newAccessToken) {
             // If the token refresh was successful, retry the original API call
@@ -14,9 +14,7 @@ async function ReftryAuthFailedApiCall(method: methodType, url: string, data?: u
             const config: AxiosRequestConfig = {
                 method,
                 url,
-                headers: {
-                Authorization: `Bearer ${newAccessToken}`,
-                },
+                withCredentials: true
             };
 
             if (data && method !== "GET") {
@@ -37,6 +35,7 @@ async function ReftryAuthFailedApiCall(method: methodType, url: string, data?: u
         if(error instanceof Error && error.message === "Token refresh failed") {
             return "RefreshFailed"; // Return a specific value to indicate that the token refresh failed
         }
+        
         return null;
     }
 }
