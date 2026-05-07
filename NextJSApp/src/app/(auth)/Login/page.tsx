@@ -1,31 +1,53 @@
 "use client"
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Mail , Lock , Building , User2 } from 'lucide-react'
 import Link from 'next/link'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { LoginSchema } from "../../../schemas/LoginSchema"
+import { useForm } from 'react-hook-form'
+import z from 'zod'
+import toast from 'react-hot-toast'
+import { useState } from 'react'
+import authService from '@/services/AuthService'
 
 export default function SignupPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    role: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [isLoggingIn,setIsLoggingIn] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Mock signup - navigate to main page
-    router.push('/');
-  };
+  const { 
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  async function LoginUser(data: z.infer<typeof LoginSchema>) {
+    try {
+      setIsLoggingIn(true)
+      const logInResponse = await authService.Login(data.email,data.password)
+
+      if(logInResponse === "InvalidCredentials") {
+        toast.error("Invalid Credentials!")
+        return
+      }
+
+      if(logInResponse?.success) {
+        toast.success("Login Successfull")
+        router.push("/")
+      }
+    } catch (e) {
+      toast.error("Could not login, Please try Again!")
+    } finally {
+      setIsLoggingIn(false)
+      reset()
+    }
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -45,7 +67,7 @@ export default function SignupPage() {
 
         {/* Signup Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit(LoginUser)} className="space-y-5">
 
             {/* Email */}
             <div>
@@ -57,14 +79,15 @@ export default function SignupPage() {
                 <input
                   type="email"
                   id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-black"
                   placeholder="you@company.com"
                   required
+                  {...register("email")}
                 />
               </div>
+              {errors.email?.message && (
+                <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -77,23 +100,25 @@ export default function SignupPage() {
                 <input
                   type="password"
                   id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-black"
                   placeholder="••••••••"
                   required
+                  {...register("password")}
                 />
               </div>
+              {errors.password?.message && (
+                <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 cursor-pointer"
+              disabled={isLoggingIn}
             >
               <User2 className="w-5 h-5" />
-              Log in
+              { isLoggingIn ? "Logging In..." : "Log In" }
             </button>
           </form>
 

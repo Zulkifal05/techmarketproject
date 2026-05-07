@@ -1,32 +1,72 @@
 "use client"
-
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserPlus, Mail, Lock, User, Building } from 'lucide-react'
 import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { SignupSchema } from "../../../schemas/SignupSchema"
+import { type z } from 'zod'
+import authService from '@/services/AuthService'
+import { toast } from "react-hot-toast"
+import { useState } from 'react'
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    role: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const router = useRouter()
+  const [isSigningUp, setIsSigningUp] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Mock signup - navigate to main page
-    router.push('/');
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<z.infer<typeof SignupSchema>>({
+    resolver: zodResolver(SignupSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      role: 'SELLER',
+      profilePicture: ''
+    }
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  async function SignupUser(data: z.infer<typeof SignupSchema>) {
+    try {
+      setIsSigningUp(true)
+      const createdUser = await authService.SignUp(data.name, data.email, data.password, data.role);
+
+      if(createdUser === "Email already exists") {
+        toast.error('Email already exists. Please use a different email.')
+        return;
+      }
+
+      if(createdUser) {  // If the user was created successfully, attempt to log in
+        const loginResponse = await authService.Login(data.email, data.password);
+
+        if(loginResponse === "InvalidCredentials") {
+          toast.error('Login failed after signup. Please try logging in manually.')
+          router.push('/Login')
+          return;
+        }
+
+        if(loginResponse?.user) {
+          toast.success('Account created successfully!')
+          router.push("/")  // Go to home when sign up successfull
+        } else {
+          toast.error('Login failed after signup. Please try logging in manually.')
+          router.push('/Login')
+        }
+
+      } else {
+        toast.error('Failed to create account. Please try again.')
+      }
+    } catch (e) {
+      toast.error('Failed to create account. Please try again.')
+    } finally {
+      setIsSigningUp(false)
+      reset() // Reset the form after submission
+    }
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -46,25 +86,26 @@ export default function SignupPage() {
 
         {/* Signup Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit(SignupUser)} className="space-y-5">
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName" className="block text-sm text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm text-gray-700 mb-2">
                 Full Name
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
+                  id="name"
+                  {...register('name')}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-black"
                   placeholder="John Doe"
-                  required
+                  aria-invalid={errors.name ? 'true' : 'false'}
                 />
               </div>
+              {errors.name?.message && (
+                <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -77,14 +118,15 @@ export default function SignupPage() {
                 <input
                   type="email"
                   id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  {...register('email')}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-black"
                   placeholder="you@company.com"
-                  required
+                  aria-invalid={errors.email ? 'true' : 'false'}
                 />
               </div>
+              {errors.email?.message && (
+                <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Role Selection */}
@@ -96,17 +138,17 @@ export default function SignupPage() {
                 <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <select
                   id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  {...register('role')}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-black appearance-none bg-white cursor-pointer"
-                  required
+                  aria-invalid={errors.role ? 'true' : 'false'}
                 >
-                  <option value="">Select your role</option>
-                  <option value="developer">Developer</option>
-                  <option value="hirer">Hirer</option>
+                  <option value="SELLER">Developer</option>
+                  <option value="BUYER">Hirer</option>
                 </select>
               </div>
+              {errors.role?.message && (
+                <p className="mt-2 text-sm text-red-600">Select Role Please</p>
+              )}
             </div>
 
             {/* Password */}
@@ -119,23 +161,25 @@ export default function SignupPage() {
                 <input
                   type="password"
                   id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register('password')}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-black"
                   placeholder="••••••••"
-                  required
+                  aria-invalid={errors.password ? 'true' : 'false'}
                 />
               </div>
+              {errors.password?.message && (
+                <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 cursor-pointer"
+              disabled={isSigningUp}
             >
               <UserPlus className="w-5 h-5" />
-              Create Account
+              {isSigningUp ? 'Creating Account...' : 'Sign Up'}
             </button>
           </form>
 
