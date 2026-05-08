@@ -29,23 +29,11 @@ export async function GET() {
 
         const { accessToken , refreshToken } = await GenerateAccessAndRefreshToken(user._id)
 
-        const res = NextResponse.json({ message: "Token refreshed successfuly", success: true }, { status : 200 })
+        if(!accessToken || !refreshToken) {
+            return NextResponse.json({ message: "Error creating token", success: false }, { status : 500 })
+        }
 
-        res.cookies.set("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 10 * 24 * 60 * 60 * 1000 // 10 days
-        })
-
-        res.cookies.set("accessToken", refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 15 // 15 mins
-        })
-
-        return res
+        return NextResponse.json({ message: "Token refreshed successfuly", success: true , refreshToken, accessToken}, { status : 200 })
     } catch (error) {
         console.error(error)
 
