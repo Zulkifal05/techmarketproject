@@ -33,7 +33,12 @@ export async function GET() {
             return NextResponse.json({ message: "Error creating token", success: false }, { status : 500 })
         }
 
-        return NextResponse.json({ message: "Token refreshed successfuly", success: true , refreshToken, accessToken}, { status : 200 })
+        //Save the new refresh token in DB also
+        user.refreshToken = refreshToken
+        await user.save()
+
+        //Returning then tokens in response because middleware would set them in browser cookies
+        return NextResponse.json({ message: "Token refreshed successfuly", success: true , refreshToken , accessToken }, { status : 200 })
     } catch (error) {
         console.error(error)
 
