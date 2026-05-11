@@ -1,5 +1,5 @@
 import GenerateAccessAndRefreshToken from "@/utils/GenerateJWTTokens"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { NextResponse } from "next/server"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { User as UserModel } from "@techmarket/models"
@@ -37,8 +37,34 @@ export async function GET() {
         user.refreshToken = refreshToken
         await user.save()
 
-        //Returning then tokens in response because middleware would set them in browser cookies
-        return NextResponse.json({ message: "Token refreshed successfuly", success: true , refreshToken , accessToken }, { status : 200 })
+        const headersList = await headers()
+        const isInternal = headersList.get("x-internal-request")
+
+        if(isInternal === process.env.NEXT_INTERNAL_API_CALL_SECRET) {
+            //If the request is from our middleware, we return the tokens in response so that middleware can set them in browser cookies
+            return NextResponse.json({ message: "Token refreshed successfuly", success: true , refreshToken , accessToken }, { status : 200 })
+        }
+
+        //If the request is from client, we set the tokens in httpOnly cookies
+        const res = NextResponse.json({ message: "Token refreshed successfuly", success: true }, { status : 200 })
+
+        res.cookies.set('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 15, // 15 mins,
+            path: '/'
+        })
+
+        res.cookies.set('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days,
+            path: '/'
+        })
+        
+        return res
     } catch (error) {
         console.error(error)
 
