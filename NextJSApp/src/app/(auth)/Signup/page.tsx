@@ -56,7 +56,6 @@ export default function SignupPage() {
           toast.error('Login failed after signup. Please try logging in manually.')
           router.push('/Login')
         }
-
       } else {
         toast.error('Failed to create account. Please try again.')
       }
