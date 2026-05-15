@@ -12,6 +12,9 @@ export default function Postcard({ job }: PostcardProps) {
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-semibold text-gray-900 leading-tight flex-1">{job.title}</h3>
+                  <span className={`px-1 py-1 ${job?.status === "OPEN" ? "bg-green-500" : job?.status === "COMPLETED" ? "bg-gray-500" : job?.status === "PROGRESSING" ? "bg-blue-500" : "bg-gray-300"} text-white text-xs font-medium rounded-full ml-2 shrink-0`}>
+                    {job?.status === "OPEN" ? "OPEN" : job?.status === "COMPLETED" ? "CLOSE" : job?.status === "PROGRESSING" ? "ACTIVE" : job?.status}
+                  </span>
                 </div>
 
                 {/* Description */}
