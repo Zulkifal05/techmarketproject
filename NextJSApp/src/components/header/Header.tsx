@@ -1,12 +1,16 @@
 "use client"
-import { Search , Menu , X , Building , MessageSquare } from 'lucide-react'
+import { Search , Building , MessageSquare } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { developmentCategories } from '@/constants/Categories'
 import { User } from '@techmarket/models/dist/UserModel'
+import ProfileAvatar from './UserProfileIcon'
 
-export default function Header({ user }:{ user : User }) {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+type UserProps = {
+  user: User & { _id?: string };
+};
+
+export default function Header({ user } : UserProps) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredCategories = useMemo(() => {
@@ -76,19 +80,7 @@ export default function Header({ user }:{ user : User }) {
                 <MessageSquare className="w-6 h-6 text-gray-700" />
               </Link>
 
-              <Link
-                href="/Signup"
-                className="hidden sm:block px-4 py-2 text-sm bg-linear-to-br from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition"
-              >
-                Logout
-              </Link>
-
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
+              <ProfileAvatar user={user} />
             </div>
           </div>
 
@@ -127,20 +119,6 @@ export default function Header({ user }:{ user : User }) {
             </div>
           )}
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white">
-            <div className="px-4 py-4">
-              <Link
-                href="/Signup"
-                className="block w-full px-4 py-2 text-center bg-linear-to-br from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition"
-              >
-                Logout
-              </Link>
-            </div>
-          </div>
-        )}
       </header>
         </>
     )
