@@ -1,7 +1,7 @@
 import CategoriesBanner from "@/components/mainpage/CategoriesBanner"
 import Feed from "@/components/mainpage/Feed"
 import HirerFeatures from "@/components/mainpage/HirerFeatures"
-import { getUser } from "@/utils/GetUser"
+import { getUser } from "@/services/server/GetUser"
 import { redirect } from "next/navigation"
 
 export default async function Page() {

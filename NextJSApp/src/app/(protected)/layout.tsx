@@ -2,7 +2,7 @@ import ZustandHydrater from "@/components/ZustandHydrater"
 import { redirect } from "next/navigation"
 import Header from "@/components/header/Header"
 import Footer from "@/components/footer/Footer"
-import { getUser } from "@/utils/GetUser"
+import { getUser } from "@/services/server/GetUser"
 
 export default async function RootLayout({
   children,
