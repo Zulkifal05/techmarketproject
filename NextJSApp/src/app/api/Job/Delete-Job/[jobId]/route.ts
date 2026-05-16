@@ -5,7 +5,7 @@ import JobModel from "@/models/JobModel"
 import ProposalModel from "@/models/ProposalModel"
 import { DeleteJobSchema } from "@/schemas/JobSchema"
 
-export async function DELETE(req: Request,{ params }: { params: { jobId: string } }) {
+export async function DELETE(req: Request,{ params }: { params: Promise<{ jobId: string }> }) {
     try {
         const cookieStore = await cookies()
         const token = cookieStore.get("accessToken")?.value
@@ -24,7 +24,7 @@ export async function DELETE(req: Request,{ params }: { params: { jobId: string 
             return NextResponse.json({ message: "Only BUYERS are authorized", success: false }, { status: 403 })
         }
 
-        const { jobId } = params
+        const { jobId } = await params
 
         if (!jobId) {
             return NextResponse.json({ message: "Job ID is required", success: false }, { status: 400 })

@@ -4,7 +4,7 @@ import ProposalModel from "@/models/ProposalModel"
 import { cookies } from "next/headers"
 import { DeleteProposalSchema } from "@/schemas/ProposalSchema"
 
-export async function DELETE(req: Request, { params }: { params: { proposalId: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ proposalId: string }> }) {
     try {
         const cookieStore = await cookies()
         const token = cookieStore.get("accessToken")?.value
@@ -23,7 +23,7 @@ export async function DELETE(req: Request, { params }: { params: { proposalId: s
             return NextResponse.json({ message: "Forbidden: Only SELLERs can delete proposals", success: false }, { status: 403 })
         }
 
-        const { proposalId } = params
+        const { proposalId } = await params
         const body = { proposalId }
         const validation = DeleteProposalSchema.safeParse(body)
 
