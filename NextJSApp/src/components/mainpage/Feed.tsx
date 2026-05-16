@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import jobService from "@/services/JobService"
+import jobService from "@/services/client/JobService"
 import Postcard from "./Postcard"
 import { Job } from "@/models/JobModel"
 import toast from "react-hot-toast"
