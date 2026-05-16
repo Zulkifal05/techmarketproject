@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SignupSchema } from "../../../schemas/SignupSchema"
 import { type z } from 'zod'
-import authService from '@/services/AuthService'
+import authService from '@/services/client/AuthService'
 import { toast } from "react-hot-toast"
 import { useState } from 'react'
 

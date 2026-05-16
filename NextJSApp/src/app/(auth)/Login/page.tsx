@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import z from 'zod'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
-import authService from '@/services/AuthService'
+import authService from '@/services/client/AuthService'
 
 export default function SignupPage() {
   const router = useRouter();
