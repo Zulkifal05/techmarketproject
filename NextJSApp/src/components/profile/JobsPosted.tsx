@@ -38,10 +38,6 @@ const JobsPosted = async ({ userId , userAllowedToUpdate} : { userId: string , u
 
       {/* Posted Jobs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-              {/* <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Posted Projects</h2>
-              </div> */}
-
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Posted Projects</h2>
       
               {/* Projects List */}
@@ -67,9 +63,7 @@ const JobsPosted = async ({ userId , userAllowedToUpdate} : { userId: string , u
                             {job?.status}
                           </span>
                         </div>
-      
-                        {/* <p className="text-xs text-gray-500 mb-3">{job?}</p> */}
-      
+
                         <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                           {job?.description}
                         </p>
@@ -86,14 +80,6 @@ const JobsPosted = async ({ userId , userAllowedToUpdate} : { userId: string , u
                             ))}
                           </div>
                         </div>
-      
-                        {/* <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-100">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium text-gray-900">{job?.rating}</span>
-                          </div>
-                          <span className="text-sm text-gray-500">({job?.reviews} reviews)</span>
-                        </div> */}
       
                         <div className="flex items-center justify-between">
                           <div>
