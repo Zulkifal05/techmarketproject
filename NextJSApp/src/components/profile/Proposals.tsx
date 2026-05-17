@@ -4,6 +4,8 @@ import DeleteJobBtn from "./DeleteJobBtn"
 import GetProposals from "@/services/server/GetProposals"
 
 const JobsPosted = async ({ userId , userAllowedToUpdate} : { userId: string , userAllowedToUpdate: boolean }) => {
+
+    // TODO: Add pagination for this component if the user has more than 10 posted jobs
     const userProposals = await GetProposals(userId);
 
     return (

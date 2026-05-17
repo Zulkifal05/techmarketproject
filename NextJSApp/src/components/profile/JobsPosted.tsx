@@ -4,6 +4,8 @@ import Link from "next/link"
 import DeleteJobBtn from "./DeleteJobBtn";
 
 const JobsPosted = async ({ userId , userAllowedToUpdate} : { userId: string , userAllowedToUpdate: boolean }) => {
+
+    // TODO: Add pagination for this component if the user has more than 10 posted jobs
     const userJobs = await GetPostedJobs(userId);
 
     return (
