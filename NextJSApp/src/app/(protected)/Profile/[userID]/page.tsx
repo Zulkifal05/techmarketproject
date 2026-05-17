@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation"
 import GetSpecificUser from "@/services/server/GetSpecificUser"
 import JobsPosted from "@/components/profile/JobsPosted"
+import Proposals from "@/components/profile/Proposals"
 
 export default async function ProfilePage({ params }: { params: Promise<{ userID: string }> }) {
 
@@ -12,13 +13,17 @@ export default async function ProfilePage({ params }: { params: Promise<{ userID
     const cookieStore = await cookies()
     const token = cookieStore.get("accessToken")?.value as string;
 
-    const loggedInUser = await verifyJWT(token)
+    if(!token) {
+      redirect("/Login");
+    }
+
+    const loggedInUser = await verifyJWT(token)  // Verify the JWT token to get the logged-in user's information
 
     if(!loggedInUser) {
       redirect("/Login");
     }
 
-    const userProfile = await GetSpecificUser(userID);
+    const userProfile = await GetSpecificUser(userID);  // Fetch the profile data of the user being viewed
 
     if(!userProfile) {
       notFound();
@@ -58,7 +63,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userID
         </div>
       </div>
 
-      <JobsPosted userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/>
+      { userProfile?.role === "BUYER" ? 
+      <JobsPosted userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/> : 
+      <Proposals userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/> }
       </div>
       )
 }
