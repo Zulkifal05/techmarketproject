@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation"
 import GetSpecificUser from "@/services/server/GetSpecificUser"
 import JobsPosted from "@/components/profile/JobsPosted"
 import Proposals from "@/components/profile/Proposals"
+import { Suspense } from "react"
 
 export default async function ProfilePage({ params }: { params: Promise<{ userID: string }> }) {
 
@@ -64,8 +65,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ userID
       </div>
 
       { userProfile?.role === "BUYER" ? 
-      <JobsPosted userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/> : 
-      <Proposals userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/> }
+        <Suspense fallback={<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center text-gray-500">Loading posted jobs...</div>}>
+          <JobsPosted userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/>
+        </Suspense> :
+        <Suspense fallback={<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center text-gray-500">Loading proposals...</div>}>
+          <Proposals userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/>
+        </Suspense>}
       </div>
       )
 }
