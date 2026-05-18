@@ -17,7 +17,7 @@ export default async function Page() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="max-w-3xl">
             <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-              Welcome to TechMaket
+              Welcome {user?.name || "to TechMarket"}
             </h1>
             <p className="text-lg sm:text-xl text-blue-100 mb-8">
               Your one-stop platform for connecting developers and clients to build, hire, and grow in tech.
@@ -31,7 +31,7 @@ export default async function Page() {
           <CategoriesBanner />
           <Feed />
         </> : 
-        <HirerFeatures /> }
+        <HirerFeatures user={user} /> }
     </>
   )
 }
