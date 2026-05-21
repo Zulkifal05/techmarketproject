@@ -7,8 +7,7 @@ import GetSpecificUser from "@/services/server/GetSpecificUser"
 import JobsPosted from "@/components/profile/JobsPosted"
 import Proposals from "@/components/profile/Proposals"
 import { Suspense } from "react"
-import SignoutBtn from "@/components/profile/SignoutBtn";
-import { string } from "zod";
+import SignoutBtn from "@/components/profile/SignoutBtn"
 
 export default async function ProfilePage({ params }: { params: Promise<{ userID: string }> }) {
 
