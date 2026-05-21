@@ -7,6 +7,7 @@ import GetSpecificUser from "@/services/server/GetSpecificUser"
 import JobsPosted from "@/components/profile/JobsPosted"
 import Proposals from "@/components/profile/Proposals"
 import { Suspense } from "react"
+import SignoutBtn from "@/components/profile/SignoutBtn";
 
 export default async function ProfilePage({ params }: { params: Promise<{ userID: string }> }) {
 
@@ -71,6 +72,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ userID
         <Suspense fallback={<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center text-gray-500">Loading proposals...</div>}>
           <Proposals userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/>
         </Suspense>}
+
+        <div className="flex justify-end px-3">
+          <SignoutBtn />
+        </div>
       </div>
       )
 }
