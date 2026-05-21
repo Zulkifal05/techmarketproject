@@ -8,6 +8,7 @@ import JobsPosted from "@/components/profile/JobsPosted"
 import Proposals from "@/components/profile/Proposals"
 import { Suspense } from "react"
 import SignoutBtn from "@/components/profile/SignoutBtn";
+import { string } from "zod";
 
 export default async function ProfilePage({ params }: { params: Promise<{ userID: string }> }) {
 
@@ -73,9 +74,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ userID
           <Proposals userId={String(userProfile?._id)} userAllowedToUpdate={String(loggedInUser?._id) === String(userProfile?._id)}/>
         </Suspense>}
 
+        {/* Signout Button - Only show if the logged-in user is viewing their own profile */ }
+        { String(loggedInUser?._id) === String(userProfile?._id) && 
         <div className="flex justify-end px-3">
           <SignoutBtn />
-        </div>
+        </div> }
       </div>
       )
 }
