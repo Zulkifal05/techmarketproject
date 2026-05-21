@@ -58,11 +58,14 @@ export default function Header({ user } : UserProps) {
                     <ul className="divide-y divide-gray-100">
                       {filteredCategories.length > 0 ? (
                         filteredCategories.slice(0, 8).map((category) => (
-                          <li
-                            key={category}
-                            className="cursor-pointer px-4 py-3 text-sm text-gray-700 hover:bg-black/5"
-                          >
-                            {category}
+                          <li key={category}>
+                            <Link
+                              href={`/category/${encodeURIComponent(category)}`}
+                              onClick={() => setSearchTerm("")}
+                              className="block px-4 py-3 text-sm text-gray-700 hover:bg-black/5"
+                            >
+                              {category}
+                            </Link>
                           </li>
                         ))
                       ) : (
@@ -103,11 +106,14 @@ export default function Header({ user } : UserProps) {
                   <ul className="divide-y divide-gray-100">
                     {filteredCategories.length > 0 ? (
                       filteredCategories.slice(0, 8).map((category) => (
-                        <li
-                          key={category}
-                          className="cursor-pointer px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
-                        >
-                          {category}
+                        <li key={category}>
+                          <Link
+                            href={`/category/${encodeURIComponent(category)}`}
+                            onClick={() => setSearchTerm("")}
+                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
+                          >
+                            {category}
+                          </Link>
                         </li>
                       ))
                     ) : (
