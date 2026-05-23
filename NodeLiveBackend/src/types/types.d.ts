@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+import "socket.io"
 
 export interface User {
   _id: mongoose.Types.ObjectId;
@@ -15,5 +16,13 @@ declare global {
     interface Request {
       user?: User; // optional because middleware might not set it
     }
+  }
+}
+
+declare module "socket.io" {
+  interface Socket {
+    user: {
+      userId: string;
+    };
   }
 }
