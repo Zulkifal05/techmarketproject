@@ -184,3 +184,32 @@ export async function GetMessages(req: Request,res: Response) {
         })
     }
 }
+
+export async function GetUserChats(req: Request,res: Response) {
+    try {
+        const userId = req.user?._id;
+
+        const chats = await ChatModel.find({
+            participants: userId
+        }).populate("participants", "name profilePicture").populate("lastMessage");
+
+        if(chats.length === 0 || !chats) {
+            return res.status(404).json({
+                success: false,
+                message: "No chats found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Chats retrieved successfully",
+            data: chats
+        });
+    } catch (error) {
+        console.log("Error in GetUserChats Controller: ",error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        })
+    }
+}
