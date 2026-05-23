@@ -79,7 +79,7 @@ export default function Header({ user } : UserProps) {
 
             {/* Right Actions */}
             <div className="flex items-center gap-4">
-              <Link href="/Chats" className="relative p-2 hover:bg-gray-100 rounded-lg transition">
+              <Link href="/Chat" className="relative p-2 hover:bg-gray-100 rounded-lg transition">
                 <MessageSquare className="w-6 h-6 text-gray-700" />
               </Link>
 
