@@ -67,9 +67,11 @@ export async function SendMessage(req: Request,res: Response) {
             await newMessage.save();
 
             // Emit the new message to the receiver if they are online
-            const receiverSocketId = getReceiverSocketId(receiver);
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("newMessage", newMessage);
+            const receiverSocketIds = getReceiverSocketId(receiver);
+            if (receiverSocketIds && receiverSocketIds.length > 0) {
+                receiverSocketIds.forEach(socketId => {
+                    io.to(socketId).emit("newMessage", newMessage);
+                });
             }
 
             return res.status(201).json({
@@ -90,9 +92,11 @@ export async function SendMessage(req: Request,res: Response) {
             await newMessage.save();
 
             // Emit the new message to the receiver if they are online
-            const receiverSocketId = getReceiverSocketId(receiver);
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("newMessage", newMessage);
+            const receiverSocketIds = getReceiverSocketId(receiver);
+            if (receiverSocketIds && receiverSocketIds.length > 0) {
+                receiverSocketIds.forEach(socketId => {
+                    io.to(socketId).emit("newMessage", newMessage);
+                });
             }
 
             return res.status(201).json({
@@ -120,9 +124,11 @@ export async function SendMessage(req: Request,res: Response) {
             await newMessage.save();
 
             // Emit the new message to the receiver if they are online
-            const receiverSocketId = getReceiverSocketId(receiver);
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("newMessage", newMessage);
+            const receiverSocketIds = getReceiverSocketId(receiver);
+            if (receiverSocketIds && receiverSocketIds.length > 0) {
+                receiverSocketIds.forEach(socketId => {
+                    io.to(socketId).emit("newMessage", newMessage);
+                });
             }
 
             return res.status(201).json({
