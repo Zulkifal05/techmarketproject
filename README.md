@@ -104,14 +104,10 @@ tech-market/
 │   ├── app/
 │   ├── components/
 │   ├── actions/
-│   ├── lib/
 │   └── package.json
 │
 ├── node-live-backend/
 │   ├── src/
-│   ├── sockets/
-│   ├── controllers/
-│   ├── services/
 │   └── package.json
 │
 ├── shared/
@@ -193,20 +189,20 @@ Stored data includes:
 Install dependencies for each package:
 
 ```bash
-npm install
+npm install (For Each Workspace i.e NextJsApp , NodeLiveBackend , Packages)
 ```
 
 Run the Next.js application:
 
 ```bash
-cd nextjs-app
+cd NextJSApp
 npm run dev
 ```
 
 Run the live backend:
 
 ```bash
-cd node-live-backend
+cd NodeLiveBackend
 npm run dev
 ```
 
@@ -222,7 +218,3 @@ npm run dev
 * AI-powered developer recommendations
 
 ---
-
-# 📄 License
-
-This project is licensed under the MIT License.
