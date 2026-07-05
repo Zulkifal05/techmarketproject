@@ -10,7 +10,7 @@ const page = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-100 bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-3xl flex-col items-center justify-center rounded-[28px] border border-slate-200 bg-white px-6 py-16 text-center shadow-sm sm:px-10">
         <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 text-white">
           <MessageSquareText className="h-8 w-8" />
