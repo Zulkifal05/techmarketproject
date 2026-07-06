@@ -4,7 +4,6 @@ import Image from "next/image"
 import toast from "react-hot-toast"
 import UploadFileToCloudinary from "@/services/client/UploadFileToCloudinary"
 import { useRouter } from "next/navigation"
-import AuthService from "@/services/client/AuthService"
 import authService from "@/services/client/AuthService"
 
 type ProfileImageProps = {
