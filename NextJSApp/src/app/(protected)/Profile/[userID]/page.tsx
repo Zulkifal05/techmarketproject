@@ -1,5 +1,4 @@
 import { Mail } from "lucide-react"
-import Image from "next/image"
 import { verifyJWT } from "@/utils/VerifyJWT"
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation"
@@ -8,6 +7,7 @@ import JobsPosted from "@/components/profile/JobsPosted"
 import Proposals from "@/components/profile/Proposals"
 import { Suspense } from "react"
 import SignoutBtn from "@/components/profile/SignoutBtn"
+import ProfileImage from "@/components/profile/ProfileImage"
 
 export default async function ProfilePage({ params }: { params: Promise<{ userID: string }> }) {
 
@@ -40,13 +40,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userID
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* Profile Picture */}
             <div className="w-32 h-32 bg-white rounded-2xl flex items-center justify-center shadow-xl">
-              <Image
-                src="/Default-Avatar.png"
-                alt="Profile Picture"
-                className="w-28 h-28 rounded-xl object-cover"
-                width={112}
-                height={112}
-              />
+              <ProfileImage userAllowedToUpdate={String(userProfile?._id) === String(loggedInUser?._id)} src={userProfile?.profilePicture}/>
             </div>
 
             {/* Profile Info */}
