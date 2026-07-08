@@ -2,8 +2,16 @@
 
 import { cloudinary } from "@/utils/Cloudinary"
 import { verifyJWT } from "@/utils/VerifyJWT"
+import { cookies } from "next/headers"
 
-export const generateCloudinarySignatureAction = async (token: string) => {
+export const generateCloudinarySignatureAction = async () => {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value
+
+    if(!token) {
+        throw new Error("UnAuthorized")
+    }
+
     const user = await verifyJWT(token)
 
     if(!user) {
@@ -21,10 +29,10 @@ export const generateCloudinarySignatureAction = async (token: string) => {
     );
 
     return {
-    signature: signature,
-    apiKey: process.env.NEXT_CLOUDINARY_API_KEY,
-    cloudName: process.env.NEXT_CLOUDINARY_CLOUD_NAME,
-    timestamp: paramsToSign.timestamp,
-    folder: paramsToSign.folder,
-  };
+        signature: signature,
+        apiKey: process.env.NEXT_CLOUDINARY_API_KEY,
+        cloudName: process.env.NEXT_CLOUDINARY_CLOUD_NAME,
+        timestamp: paramsToSign.timestamp,
+        folder: paramsToSign.folder,
+    };
 }
