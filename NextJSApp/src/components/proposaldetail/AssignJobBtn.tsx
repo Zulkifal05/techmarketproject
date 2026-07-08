@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-const AssignJobBtn = ({jobId, proposalId}: { jobId: string; proposalId: string }) => {
+const AssignJobBtn = ({ jobId, proposalId, proposerId }: { jobId: string; proposalId: string; proposerId: string }) => {
 	const [isAssigning, setIsAssigning] = useState(false)
 	const router = useRouter()
 
@@ -15,7 +15,7 @@ const AssignJobBtn = ({jobId, proposalId}: { jobId: string; proposalId: string }
 
 			if(assignResult) {
 				toast.success("Job assigned successfully!")
-				router.push("/Chat")
+				router.push(`/Chat/${proposerId}`)
 			} else {
 				toast.error("Failed to assign job. Please try again.")
 			}

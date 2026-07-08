@@ -2,7 +2,7 @@ import { getUser } from "@/services/server/GetUser"
 import AssignJobBtn from "./AssignJobBtn"
 import RejectProposalBtn from "./RejectProposalBtn"
 
-const AssignProposalSection = async ({ proposalJobOwner , jobId , proposalId }: { proposalJobOwner: string; jobId: string; proposalId: string }) => {
+const AssignProposalSection = async ({ proposalJobOwner , jobId , proposalId , proposerId }: { proposalJobOwner: string; jobId: string; proposalId: string; proposerId: string }) => {
 	const user = await getUser()
 
 	const loggedInUserId = user?._id ? String(user._id) : null
@@ -17,7 +17,7 @@ const AssignProposalSection = async ({ proposalJobOwner , jobId , proposalId }: 
 			<p className="mt-2 text-sm text-slate-600">As the job owner you can assign this job to the proposer.</p>
 
 			<div className="mt-4 flex items-center gap-3">
-				<AssignJobBtn jobId={jobId} proposalId={proposalId} />
+				<AssignJobBtn jobId={jobId} proposalId={proposalId} proposerId={proposerId}/>
 				<RejectProposalBtn proposalId={proposalId} />
 			</div>
 		</div>
