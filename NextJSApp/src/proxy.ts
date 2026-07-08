@@ -73,5 +73,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/'],
+  matcher: ['/', '/category/:path*', '/Chat/:path*', '/Create-Job/:path*', '/job/:path*', '/Profile/:path*', '/Proposal/:path*'],
 }
