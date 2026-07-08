@@ -63,7 +63,7 @@ const page = async ({ params }: { params: Promise<{ proposalId: string }> }) => 
               </div>
             </div>
             <div className="mt-6 space-y-6 text-sm leading-7 text-slate-700">
-              <p>{proposal.description}</p>
+              <p className="whitespace-pre-wrap">{proposal.description}</p>
             </div>
           </div>
 
@@ -105,7 +105,7 @@ const page = async ({ params }: { params: Promise<{ proposalId: string }> }) => 
 
         {proposal?.status === "PENDING" && 
           <Suspense fallback={<h1>...</h1>}>
-              <AssignProposalSection proposalJobOwner={proposal.ProposalFor?.uploadedBy ?? ""} jobId={String(proposal.ProposalFor?._id) ?? ""} proposalId={String(proposal._id) ?? ""} />
+              <AssignProposalSection proposalJobOwner={proposal.ProposalFor?.uploadedBy ?? ""} jobId={String(proposal.ProposalFor?._id) ?? ""} proposalId={String(proposal._id) ?? ""} proposerId={String(proposal.uploadedBy._id) ?? ""} />
           </Suspense> 
         }
     </>
