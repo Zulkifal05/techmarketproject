@@ -5,6 +5,24 @@ import isCloudinaryUrl from "../utils/cloudinaryURLcheck.js"
 import { getReceiverSocketId, io } from "../index.js"
 import ChatModel from "../models/chat.model.js"
 
+async function getOrCreateChat(senderId: Types.ObjectId, receiverId: Types.ObjectId) {
+    let chat = await ChatModel.findOne({
+        participants: { $all: [senderId, receiverId], $size: 2 }
+    });
+
+    if (chat) {
+        return chat;
+    }
+
+    chat = new ChatModel({
+        participants: [senderId, receiverId],
+        lastMessage: null
+    });
+
+    await chat.save();
+    return chat;
+}
+
 export async function SendMessage(req: Request,res: Response) {
     try {
         if(!req.user) {
@@ -15,7 +33,7 @@ export async function SendMessage(req: Request,res: Response) {
         }
 
         const { receiver, text, picture, chatID } = req.body;
-        let chatIdToUse = chatID;  // This will either be the provided chatID or the new chatID if a new chat is created
+        const senderId = req.user._id;
 
         if (!receiver) {
             return res.status(400).json({
@@ -38,76 +56,25 @@ export async function SendMessage(req: Request,res: Response) {
             });
         }
 
-        //If no chatID is provided, create a new chat and use its ID for the message
+        let chatIdToUse = chatID;
+
         if(!chatID) {
-            const newChat = new ChatModel({
-                participants: [req.user._id, receiver],
-                lastMessage: null
-            });
-            await newChat.save();
-            chatIdToUse = newChat._id;
-        } else { // If chatID is provided, validate it
-            if(!Types.ObjectId.isValid(chatIdToUse)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid Chat ID"
-                });
-            }
-        }
-
-        // If both text and picture are provided
-        if(text && picture) {
-            const newMessage = new MessageModel({
-                sender: req.user._id,
-                receiver,
-                text,
-                picture,
-                chatID: chatIdToUse
-            });
-            await newMessage.save();
-
-            // Emit the new message to the receiver if they are online
-            const receiverSocketIds = getReceiverSocketId(receiver);
-            if (receiverSocketIds && receiverSocketIds.length > 0) {
-                receiverSocketIds.forEach(socketId => {
-                    io.to(socketId).emit("newMessage", newMessage);
-                });
-            }
-
-            return res.status(201).json({
-                success: true,
-                message: "Message sent successfully",
-                data: newMessage
+            const existingChat = await getOrCreateChat(senderId, receiver);
+            chatIdToUse = existingChat._id;
+        } else if(!Types.ObjectId.isValid(chatIdToUse)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Chat ID"
             });
         }
 
-        // If only text is provided
-        if(text) {
-            const newMessage = new MessageModel({
-                sender: req.user._id,
-                receiver,
-                text,
-                chatID: chatIdToUse
-            });
-            await newMessage.save();
+        const baseMessageData = {
+            sender: senderId,
+            receiver,
+            chatID: chatIdToUse
+        };
 
-            // Emit the new message to the receiver if they are online
-            const receiverSocketIds = getReceiverSocketId(receiver);
-            if (receiverSocketIds && receiverSocketIds.length > 0) {
-                receiverSocketIds.forEach(socketId => {
-                    io.to(socketId).emit("newMessage", newMessage);
-                });
-            }
-
-            return res.status(201).json({
-                success: true,
-                message: "Message sent successfully",
-                data: newMessage
-            });
-        }
-
-        // If only picture is provided
-        if(picture) {
+        if(text && picture) {  // Check if both text and picture are present
             if(!isCloudinaryUrl(picture)) {
                 return res.status(400).json({
                     success: false,
@@ -116,14 +83,73 @@ export async function SendMessage(req: Request,res: Response) {
             }
 
             const newMessage = new MessageModel({
-                sender: req.user._id,
-                receiver,
-                picture,
-                chatID: chatIdToUse
+                ...baseMessageData,
+                text,
+                picture
             });
             await newMessage.save();
 
-            // Emit the new message to the receiver if they are online
+            await newMessage.populate("sender", "email");
+
+            await ChatModel.findByIdAndUpdate(chatIdToUse, { lastMessage: newMessage._id });
+
+            const receiverSocketIds = getReceiverSocketId(receiver);
+            if (receiverSocketIds && receiverSocketIds.length > 0) {
+                receiverSocketIds.forEach(socketId => {
+                    io.to(socketId).emit("newMessage", newMessage);
+                });
+            }
+
+            return res.status(201).json({
+                success: true,
+                message: "Message sent successfully",
+                data: newMessage
+            });
+        }
+
+        if(text) {  // Check if only text is present
+            const newMessage = new MessageModel({
+                ...baseMessageData,
+                text
+            });
+            await newMessage.save();
+
+            await newMessage.populate("sender", "email");
+
+            await ChatModel.findByIdAndUpdate(chatIdToUse, { lastMessage: newMessage._id });
+
+            const receiverSocketIds = getReceiverSocketId(receiver);
+            if (receiverSocketIds && receiverSocketIds.length > 0) {
+                receiverSocketIds.forEach(socketId => {
+                    io.to(socketId).emit("newMessage", newMessage);
+                });
+            }
+
+            return res.status(201).json({
+                success: true,
+                message: "Message sent successfully",
+                data: newMessage
+            });
+        }
+
+        if(picture) {  // Check if only picture is present
+            if(!isCloudinaryUrl(picture)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Picture must be a valid Cloudinary URL"
+                });
+            }
+
+            const newMessage = new MessageModel({
+                ...baseMessageData,
+                picture
+            });
+            await newMessage.save();
+
+            await newMessage.populate("sender", "email");
+
+            await ChatModel.findByIdAndUpdate(chatIdToUse, { lastMessage: newMessage._id });
+
             const receiverSocketIds = getReceiverSocketId(receiver);
             if (receiverSocketIds && receiverSocketIds.length > 0) {
                 receiverSocketIds.forEach(socketId => {
@@ -148,33 +174,61 @@ export async function SendMessage(req: Request,res: Response) {
 
 export async function GetMessages(req: Request,res: Response) {
     try {
-        const { receiver } = req.body;
+        if(!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized"
+            });
+        }
 
-        if (!receiver) {
+        const receiverId = typeof req.params.receiver === "string" ? req.params.receiver : undefined;
+        const senderId = req.user._id;
+        const { page = "1", limit = "30" } = req.query as {
+            page?: string;
+            limit?: string;
+        }
+
+        if (!receiverId) {
             return res.status(400).json({
                 success: false,
-                message: "Receiver is required"
+                message: "Receiver ID is required"
             });
         }
 
-        const messages = await MessageModel.find({
-            $or: [
-                { sender: req.user?._id, receiver },
-                { sender: receiver, receiver: req.user?._id }
-            ]
-        }).sort({ createdAt: 1 });
-
-        if(messages.length === 0) {
-            return res.status(404).json({
+        if (!Types.ObjectId.isValid(receiverId)) {
+            return res.status(400).json({
                 success: false,
-                message: "No messages found"
+                message: "Invalid Receiver ID"
             });
         }
+
+        const pageNumber = Math.max(1, Number(page) || 1);
+        const limitNumber = Math.max(1, Number(limit) || 20);
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const messageQuery = {
+            $or: [
+                { sender: senderId, receiver: receiverId },
+                { sender: receiverId, receiver: senderId }
+            ]
+        };
+
+        const totalMessages = await MessageModel.countDocuments(messageQuery);
+        const messages = await MessageModel.find(messageQuery).populate("sender", "email")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNumber)
 
         return res.status(200).json({
             success: true,
             message: "Messages retrieved successfully",
-            data: messages
+            data: messages,
+            pagination: {
+                total: totalMessages,
+                page: pageNumber,
+                limit: limitNumber,
+                totalPages: Math.ceil(totalMessages / limitNumber)
+            }
         });
     } catch (error) {
         console.log("Error in GetMessages Controller: ",error)
